@@ -1,45 +1,38 @@
-/* =========================
-   GLOBAL STYLES
-========================= */
-
+/* Page background */
 body {
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family:'Segoe UI', Arial, sans-serif;
     background-color: #f5f5f5;
     margin: 0;
     padding: 0;
 }
 
-/* =========================
-   MAIN CONTAINER
-========================= */
-
+/* Center container (card style) */
 .container {
     width: 600px;
     margin: 80px auto;
     text-align: center;
 }
 
-/* Titles */
+/* Title */
 h1 {
     color: #2c3e50;
     margin-bottom: 10px;
     font-size: 28px;
 }
 
+/* Subtitle */
 h2 {
     color: #555;
     margin-bottom: 25px;
 }
 
+/* Section headings */
 h3 {
     margin-top: 30px;
     color: #333;
 }
 
-/* =========================
-   TEXTAREA
-========================= */
-
+/* Textarea */
 textarea {
     width: 100%;
     height: 120px;
@@ -55,18 +48,16 @@ textarea:focus {
     border-color: #3498db;
 }
 
-/* =========================
-   BUTTONS
-========================= */
-
+/* Button group (SPACE BETWEEN BUTTONS) */
 .button-group {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 20px;              
     flex-wrap: wrap;
     margin-top: 20px;
 }
 
+/*  Buttons (FIXED SIZE - NOT FULL WIDTH) */
 button {
     padding: 12px 20px;
     background-color: #3498db;
@@ -78,41 +69,40 @@ button {
     font-size: 15px;
     cursor: pointer;
 
-    min-width: 140px;
+    min-width: 140px;       
+    width: auto;            
+
     transition: all 0.3s ease;
 }
 
+/* Remove link underline */
+a {
+    text-decoration: none;
+}
+
+/* Hover effect */
 button:hover {
     background-color: #2980b9;
     transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(0,0,0,0.2);
 }
 
+/* Click effect */
 button:active {
     transform: scale(0.98);
 }
 
-/* Remove underline from links */
-a {
-    text-decoration: none;
-}
-
-/* =========================
-   TIMER
-========================= */
-
+/* Timer */
 #timer {
     color: red;
     font-weight: bold;
+    margin-top: 10px;
 }
 
-/* =========================
-   AUTH PAGES (REGISTER / LOGIN FIX)
-========================= */
-
+/* AUTH PAGES */
 .auth-container {
     width: 350px;
-    margin: 80px auto;
+    margin: 100px auto;
     padding: 30px;
 
     background: white;
@@ -122,31 +112,25 @@ a {
     text-align: center;
 }
 
-/* IMPORTANT FIX (THIS SOLVES YOUR ISSUE) */
-.auth-container form {
-    display: flex;
-    flex-direction: column;
+.auth-container h2 {
+    margin-bottom: 20px;
+    color: #2c3e50;
 }
 
-/* Input group FIX */
 .input-group {
-    display: flex;
-    flex-direction: column;
     text-align: left;
     margin-bottom: 15px;
 }
 
-/* Labels */
 .input-group label {
     font-size: 14px;
     color: #555;
-    margin-bottom: 5px;
 }
 
-/* Inputs */
 .input-group input {
     width: 100%;
     padding: 10px;
+    margin-top: 5px;
 
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -159,13 +143,6 @@ a {
     outline: none;
 }
 
-/* Auth button full width FIX */
-.auth-container button {
-    width: 100%;
-    margin-top: 10px;
-}
-
-/* Switch text */
 .switch-text {
     margin-top: 15px;
     font-size: 14px;
@@ -173,6 +150,7 @@ a {
 
 .switch-text a {
     color: #3498db;
+    text-decoration: none;
 }
 
 .switch-text a:hover {
