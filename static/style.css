@@ -122,9 +122,23 @@ button:active {
     margin-bottom: 15px;
 }
 
+.input-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+
+    margin-bottom: 22px;   /* more space between fields */
+}
+
 .input-group label {
+    margin-bottom: 8px;    /* space between label and input */
     font-size: 14px;
     color: #555;
+}
+
+.input-group input {
+    padding: 12px;         /* slightly bigger input */
+    border-radius: 6px;
 }
 
 .input-group input {
