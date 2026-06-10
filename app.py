@@ -204,7 +204,7 @@ def feedback():
         elif match_count > 0:
             score = 6   
         else:
-            score = 2
+            score = 0
 
         
         if score == 10:
