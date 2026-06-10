@@ -9,28 +9,17 @@
 <div class="auth-container">
     <h2>Register</h2>
 
-    <form method="POST">
-        <div class="input-group">
-            <label>Full Name</label>
-            <input type="text" name="name" placeholder="Enter your name" required>
-        </div>
+   <form method="POST" action="/register">
 
-        <div class="input-group">
-            <label>Email</label>
-            <input type="email" name="email" placeholder="Enter your email" required>
-        </div>
+    <input type="text" name="fullname" placeholder="Full Name" required>
 
-        <div class="input-group">
-            <label>Password</label>
-            <input type="password" name="password" placeholder="Create password" required>
-        </div>
+    <input type="email" name="email" placeholder="Email" required>
 
-        <button type="submit">Register</button>
+    <input type="password" name="password" placeholder="Password" required>
 
-        <p class="switch-text">
-            Already have an account? <a href="/login">Login</a>
-        </p>
-    </form>
+    <button type="submit">Register</button>
+
+</form>
 </div>
 
 </body>
