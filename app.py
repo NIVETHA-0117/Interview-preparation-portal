@@ -161,10 +161,10 @@ def feedback():
                 score = 10
                 feedback_msg = "Correct answer."
             else:
-                score = 2
+                score = 0
                 feedback_msg = "Wrong answer."
         except:
-            score = 2
+            score = 0
             feedback_msg = "Enter a valid number."
 
     else:
