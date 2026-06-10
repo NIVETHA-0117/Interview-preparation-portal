@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interview Categories</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>AI Interview Preparation Portal</h1>
+
+    <h2>Select Interview Category</h2>
+
+    <!-- Technical Section -->
+    <h3>Technical Interviews</h3>
+
+    <div class="button-group">
+        <a href="/question/python"><button>Python Interview</button></a>
+        <a href="/question/java"><button>Java Interview</button></a>
+        <a href="/question/c"><button>C Programming</button></a>
+        <a href="/question/ds"><button>Data Structures</button></a>
+    </div>
+
+    <!-- Non-Technical Section -->
+    <h3>Non-Technical Interviews</h3>
+
+    <div class="button-group">
+        <a href="/question/hr"><button>HR Interview</button></a>
+        <a href="/question/aptitude"><button>Aptitude Round</button></a>
+    </div>
+
+    <!-- Back Button -->
+    <div class="button-group">
+        <a href="/dashboard"><button>Back to Dashboard</button></a>
+    </div>
+
+</div>
+
+</body>
+</html>

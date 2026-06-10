@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interview Feedback</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Interview Feedback</h1>
+
+    <h2>Score: {{ score }}/10</h2>
+
+    <p>{{ feedback_msg }}</p>
+
+    <br><br>
+
+    <a href="/performance">
+        <button>View Performance</button>
+    </a>
+
+    <a href="/dashboard">
+        <button>Back to Dashboard</button>
+    </a>
+
+</div>
+
+</body>
+</html>
