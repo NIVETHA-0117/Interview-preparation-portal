@@ -6,6 +6,8 @@ import re
 app = Flask(**name**)
 app.secret_key = "interview_portal_secret"
 
+# ---------------- HOME ----------------
+
 @app.route('/')
 def home():
 return render_template('index.html')
@@ -69,9 +71,13 @@ if request.method == "POST":
 return render_template('register.html')
 ```
 
+# ---------------- DASHBOARD ----------------
+
 @app.route('/dashboard')
 def dashboard():
 return render_template('dashboard.html')
+
+# ---------------- CATEGORY ----------------
 
 @app.route('/category')
 def category():
@@ -149,110 +155,127 @@ return render_template(
 
 # ---------------- FEEDBACK ----------------
 
-@app.route('/feedback', methods=['GET','POST'])
+@app.route('/feedback', methods=['POST'])
 def feedback():
 
 ```
-if request.method == "POST":
+answer = request.form['answer'].lower().strip()
 
-    answer = request.form['answer'].lower().strip()
-    answer = re.sub(r'[^\w\s]', '', answer)
+# remove punctuation
+answer = re.sub(r'[^\w\s]', '', answer)
 
-    category = request.form.get('category', '').lower()
-    question = session.get('question')
+category = request.form['category']
+question = session.get('question')
 
-    # ALL ANSWERS DATABASE
-    answers = {
 
-        "What is Python?": {
-            "keywords": ["programming", "language"],
-            "feedback": "Explain definition, features and uses."
-        },
+# ---------------- ANSWERS DATABASE ----------------
+answers = {
 
-        "What is a Dictionary?": {
-            "keywords": ["key", "value"],
-            "feedback": "Explain key-value pairs with example."
-        },
+    # PYTHON
+    "What is Python?": {
+        "keywords": ["programming", "language"],
+        "feedback": "Mention definition, features and uses."
+    },
 
-        "What is Java?": {
-            "keywords": ["programming", "language"],
-            "feedback": "Mention JVM and OOP features."
-        },
+    "What is a Dictionary?": {
+        "keywords": ["key", "value"],
+        "feedback": "Explain key-value pairs with example."
+    },
 
-        "What is a Pointer?": {
-            "keywords": ["memory", "address"],
-            "feedback": "Explain memory address concept."
-        },
+    # JAVA
+    "What is Java?": {
+        "keywords": ["programming", "language"],
+        "feedback": "Mention JVM and OOP."
+    },
 
-        # -------- APTITUDE --------
-        "What is 10 + 20?": {
-            "keywords": ["30"],
-            "feedback": "Correct addition."
-        },
+    # C
+    "What is a Pointer?": {
+        "keywords": ["memory", "address"],
+        "feedback": "Explain memory address concept."
+    },
 
-        "What is 15 + 5?": {
-            "keywords": ["20"],
-            "feedback": "Correct addition."
-        },
+    # APTITUDE
+    "What is 10 + 20?": {
+        "keywords": ["30"],
+        "feedback": "Correct answer."
+    },
 
-        "What is 100 / 4?": {
-            "keywords": ["25"],
-            "feedback": "Correct division."
-        },
+    "What is 15 + 5?": {
+        "keywords": ["20"],
+        "feedback": "Correct answer."
+    },
 
-        "What is 12 * 2?": {
-            "keywords": ["24"],
-            "feedback": "Correct multiplication."
-        },
+    "What is 100 / 4?": {
+        "keywords": ["25"],
+        "feedback": "Correct answer."
+    },
 
-        "What is 50 - 20?": {
-            "keywords": ["30"],
-            "feedback": "Correct subtraction."
-        }
+    "What is 12 * 2?": {
+        "keywords": ["24"],
+        "feedback": "Correct answer."
+    },
+
+    "What is 50 - 20?": {
+        "keywords": ["30"],
+        "feedback": "Correct answer."
     }
+}
 
-    question_data = answers.get(question, {})
-    keywords = question_data.get("keywords", [])
-    custom_feedback = question_data.get("feedback", "")
 
-    score = 0
+# ---------------- SAFE MATCHING ----------------
+question_data = None
 
-    for word in keywords:
-        if word in answer:
-            score += 1
+for q in answers:
+    if q.lower().strip() == question.lower().strip():
+        question_data = answers[q]
+        break
 
-    if score >= 1:
-        marks = 10
-        feedback_msg = "Excellent answer. " + custom_feedback
-    else:
-        marks = 0
-        feedback_msg = "Answer needs improvement. " + custom_feedback
 
-    conn = sqlite3.connect('database/users.db')
-    cursor = conn.cursor()
+if not question_data:
+    return "Error: Question not found in answer database"
 
-    cursor.execute(
-        "INSERT INTO interview_results(email,interview_type,score) VALUES(?,?,?)",
-        (
-            session.get('email'),
-            category.title() + " Interview",
-            marks
-        )
+
+keywords = question_data["keywords"]
+custom_feedback = question_data["feedback"]
+
+
+# ---------------- SCORING ----------------
+score = 0
+
+for word in keywords:
+    if word in answer:
+        score += 1
+
+
+if score >= 1:
+    marks = 10
+    feedback_msg = "Excellent answer. " + custom_feedback
+else:
+    marks = 0
+    feedback_msg = "Answer needs improvement. " + custom_feedback
+
+
+# ---------------- SAVE RESULT ----------------
+conn = sqlite3.connect('database/users.db')
+cursor = conn.cursor()
+
+cursor.execute(
+    "INSERT INTO interview_results(email,interview_type,score) VALUES(?,?,?)",
+    (
+        session.get('email'),
+        category.title() + " Interview",
+        marks
     )
+)
 
-    conn.commit()
-    conn.close()
+conn.commit()
+conn.close()
 
-    return render_template(
-        'feedback.html',
-        score=marks,
-        feedback_msg=feedback_msg
-    )
 
 return render_template(
     'feedback.html',
-    score=0,
-    feedback_msg="No feedback available"
+    score=marks,
+    feedback_msg=feedback_msg
 )
 ```
 
@@ -317,6 +340,12 @@ return render_template(
 def logout():
 session.clear()
 return render_template('index.html')
+
+# ---------------- CHECK ----------------
+
+@app.route('/check')
+def check():
+return "Flask is working"
 
 if **name** == "**main**":
 app.run(host="0.0.0.0", port=10000)
