@@ -27,6 +27,24 @@
     </form>
 
 </div>
+<script>
+    let timeLeft = 20;  // starting time
 
+    const timerElement = document.getElementById("time");
+
+    const countdown = setInterval(() => {
+        timeLeft--;
+
+        timerElement.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            alert("Time is up!");
+
+            // auto submit form
+            document.querySelector("form").submit();
+        }
+    }, 1000);
+</script>
 </body>
 </html>
