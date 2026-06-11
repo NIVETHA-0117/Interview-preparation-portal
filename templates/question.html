@@ -6,34 +6,27 @@
 </head>
 <body>
 
+<div class="question-container">
+
     <h1>Interview Questions</h1>
-    <h5>Time Left: <span id="timer">30</span> seconds</h5>
+
+    <p class="timer">Time Left: <span id="time">20</span> seconds</p>
+
     <h3>Question 1</h3>
-    <p>{{ question }}</p>
 
-   <form action="/feedback" method="POST">
-    <input type="hidden" name="category" value="{{ category }}">
-    <textarea name="answer" rows="5" cols="50"
-    placeholder="Type your answer here..."></textarea>
+    <p class="question-text">What is a Dictionary?</p>
 
-    <br><br>
+    <form method="POST">
 
-    <button type="submit">Submit Answer</button>
+        <textarea name="answer" placeholder="Type your answer here..." required></textarea>
 
-</form>
-<script>
-let time = 30;
+        <br>
 
-let timer = setInterval(function() {
-    time--;
-    document.getElementById("timer").innerText = time;
+        <button type="submit">Submit Answer</button>
 
-    if (time <= 0) {
-        clearInterval(timer);
-        alert("Time's up!");
-        document.querySelector("form").submit();
-    }
-}, 1000);
-</script>
+    </form>
+
+</div>
+
 </body>
 </html>
