@@ -28,23 +28,31 @@
 
 </div>
 <script>
-    let timeLeft = 20;  // starting time
+    let timeLeft = 20;
 
     const timerElement = document.getElementById("time");
 
-    const countdown = setInterval(() => {
-        timeLeft--;
+    if (!timerElement) {
+        console.log("Timer element NOT found");
+    } else {
+        const countdown = setInterval(() => {
+            timeLeft--;
 
-        timerElement.textContent = timeLeft;
+            timerElement.textContent = timeLeft;
 
-        if (timeLeft <= 0) {
-            clearInterval(countdown);
-            alert("Time is up!");
+            if (timeLeft <= 5) {
+                timerElement.style.color = "red";
+            }
 
-            // auto submit form
-            document.querySelector("form").submit();
-        }
-    }, 1000);
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                alert("Time is up!");
+                document.querySelector("form").submit();
+            }
+
+        }, 1000);
+    }
 </script>
+
 </body>
 </html>
