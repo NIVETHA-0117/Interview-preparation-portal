@@ -1,37 +1,31 @@
-<script>
-document.addEventListener("DOMContentLoaded", function () {
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interview Questions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 
-    let timeLeft = 20;
+<body>
 
-    const timerElement = document.getElementById("time");
-    const form = document.querySelector("form");
+<h1 style="color:red;">PAGE IS LOADING</h1>
 
-    // ✅ safety check
-    if (!timerElement) {
-        console.log("Timer element not found");
-        return;
-    }
+<div class="question-container">
 
-    const countdown = setInterval(() => {
-        timeLeft--;
+    <h1>Interview Questions</h1>
 
-        timerElement.textContent = timeLeft;
+    <p class="timer">Time Left: <span id="time">20</span> seconds</p>
 
-        if (timeLeft <= 5) {
-            timerElement.style.color = "red";
-        }
+    <h3>Question 1</h3>
 
-        if (timeLeft <= 0) {
-            clearInterval(countdown);
-            alert("Time is up!");
+    <p class="question-text">What is a Dictionary?</p>
 
-            // ✅ SAFE submit
-            if (form) {
-                form.submit();
-            }
-        }
+    <form method="POST">
+        <textarea name="answer" placeholder="Type your answer here..." required></textarea>
+        <br><br>
+        <button type="submit">Submit Answer</button>
+    </form>
 
-    }, 1000);
+</div>
 
-});
-</script>
+</body>
+</html>
