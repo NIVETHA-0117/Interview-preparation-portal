@@ -4,6 +4,7 @@
     <title>Interview Questions</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
 <div class="question-container">
@@ -27,6 +28,26 @@
     </form>
 
 </div>
+<script>
+    let timeLeft = 20;  // starting time
 
+    const timerElement = document.getElementById("time");
+
+    const countdown = setInterval(() => {
+        timeLeft--;
+
+        timerElement.textContent = timeLeft;
+        if (timeLeft <= 5) {
+          timerElement.style.color = "red";
+        }       
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            alert("Time is up!");
+
+            // auto submit form
+            document.querySelector("form").submit();
+        }
+    }, 1000);
+</script>
 </body>
 </html>
