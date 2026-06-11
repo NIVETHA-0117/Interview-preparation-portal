@@ -4,28 +4,36 @@
     <title>Interview Questions</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
 
-<h1 style="color:red;">PAGE IS LOADING</h1>
-
-<div class="question-container">
-
     <h1>Interview Questions</h1>
-
-    <p class="timer">Time Left: <span id="time">20</span> seconds</p>
-
+    <h5>Time Left: <span id="timer">30</span> seconds</h5>
     <h3>Question 1</h3>
+    <p>{{ question }}</p>
 
-    <p class="question-text">What is a Dictionary?</p>
+   <form action="/feedback" method="POST">
+    <input type="hidden" name="category" value="{{ category }}">
+    <textarea name="answer" rows="5" cols="50"
+    placeholder="Type your answer here..."></textarea>
 
-    <form method="POST">
-        <textarea name="answer" placeholder="Type your answer here..." required></textarea>
-        <br><br>
-        <button type="submit">Submit Answer</button>
-    </form>
+    <br><br>
 
-</div>
+    <button type="submit">Submit Answer</button>
 
+</form>
+<script>
+let time = 30;
+
+let timer = setInterval(function() {
+    time--;
+    document.getElementById("timer").innerText = time;
+
+    if (time <= 0) {
+        clearInterval(timer);
+        alert("Time's up!");
+        document.querySelector("form").submit();
+    }
+}, 1000);
+</script>
 </body>
 </html>
