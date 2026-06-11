@@ -141,7 +141,7 @@ def feedback():
     category = request.form['category']
     question = session.get('question')
 
-    score = 2  
+    score = 0
     answer = answer.lower().strip()
     answer = re.sub(r'[^\w\s]', '', answer)
 
