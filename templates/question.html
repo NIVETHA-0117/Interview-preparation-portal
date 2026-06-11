@@ -1,35 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Interview Questions</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-
-<body>
-
-<div class="question-container">
-
-    <h1>Interview Questions</h1>
-
-    <p class="timer">Time Left: <span id="time">20</span> seconds</p>
-
-    <h3>Question 1</h3>
-
-    <p class="question-text">What is a Dictionary?</p>
-
-    <form method="POST">
-
-        <textarea name="answer" placeholder="Type your answer here..." required></textarea>
-
-        <br>
-
-        <button type="submit">Submit Answer</button>
-
-    </form>
-
-</div>
 <script>
-    let timeLeft = 20;  // starting time
+document.addEventListener("DOMContentLoaded", function () {
+
+    let timeLeft = 20;
 
     const timerElement = document.getElementById("time");
 
@@ -37,17 +9,18 @@
         timeLeft--;
 
         timerElement.textContent = timeLeft;
+
         if (timeLeft <= 5) {
-          timerElement.style.color = "red";
-        }       
+            timerElement.style.color = "red";
+        }
+
         if (timeLeft <= 0) {
             clearInterval(countdown);
             alert("Time is up!");
-
-            // auto submit form
             document.querySelector("form").submit();
         }
+
     }, 1000);
+
+});
 </script>
-</body>
-</html>
