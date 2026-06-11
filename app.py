@@ -1,522 +1,322 @@
 from flask import Flask, render_template, request, session
 import sqlite3
 import random
+import re
 
-app = Flask(__name__)
-
+app = Flask(**name**)
 app.secret_key = "interview_portal_secret"
-
 
 @app.route('/')
 def home():
-    return render_template('index.html')
-
+return render_template('index.html')
 
 # ---------------- LOGIN ----------------
 
 @app.route('/login', methods=['GET','POST'])
 def login():
 
-    if request.method == "POST":
+```
+if request.method == "POST":
 
-        email = request.form['email']
-        password = request.form['password']
+    email = request.form['email']
+    password = request.form['password']
 
+    conn = sqlite3.connect('database/users.db')
+    cursor = conn.cursor()
 
-        conn = sqlite3.connect('database/users.db')
-        cursor = conn.cursor()
+    cursor.execute(
+        "SELECT * FROM users WHERE email=? AND password=?",
+        (email,password)
+    )
 
+    user = cursor.fetchone()
+    conn.close()
 
-        cursor.execute(
-            "SELECT * FROM users WHERE email=? AND password=?",
-            (email,password)
-        )
+    if user:
+        session['email'] = email
+        return render_template('dashboard.html')
+    else:
+        return "Invalid Email or Password"
 
-        user = cursor.fetchone()
-
-        conn.close()
-
-
-        if user:
-
-            session['email'] = email
-
-            return render_template('dashboard.html')
-
-        else:
-
-            return "Invalid Email or Password"
-
-
-    return render_template('login.html')
-
-
+return render_template('login.html')
+```
 
 # ---------------- REGISTER ----------------
-
 
 @app.route('/register', methods=['GET','POST'])
 def register():
 
-    if request.method == "POST":
+```
+if request.method == "POST":
 
-        fullname = request.form['fullname']
-        email = request.form['email']
-        password = request.form['password']
+    fullname = request.form['fullname']
+    email = request.form['email']
+    password = request.form['password']
 
+    conn = sqlite3.connect('database/users.db')
+    cursor = conn.cursor()
 
-        conn = sqlite3.connect('database/users.db')
-        cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO users(fullname,email,password) VALUES(?,?,?)",
+        (fullname,email,password)
+    )
 
+    conn.commit()
+    conn.close()
 
-        cursor.execute(
-            "INSERT INTO users(fullname,email,password) VALUES(?,?,?)",
-            (fullname,email,password)
-        )
+    return "Registration Successful"
 
-
-        conn.commit()
-        conn.close()
-
-
-        return "Registration Successful"
-
-
-    return render_template('register.html')
-
-
-
+return render_template('register.html')
+```
 
 @app.route('/dashboard')
 def dashboard():
-
-    return render_template('dashboard.html')
-
-
-
+return render_template('dashboard.html')
 
 @app.route('/category')
 def category():
-
-    return render_template('interview_category.html')
-
-
-
+return render_template('interview_category.html')
 
 # ---------------- QUESTIONS ----------------
-
 
 @app.route('/question/<category>')
 def question(category):
 
-
-    questions = {
-
+```
+questions = {
 
     "python":[
-
         "What is Python?",
         "What is a List in Python?",
         "What is a Dictionary?",
         "What is a Function?",
         "What are Modules?"
-
     ],
 
-
-
     "java":[
-
         "What is Java?",
         "What is JVM?",
         "What is OOP?",
         "What is Inheritance?",
         "What is Polymorphism?"
-
     ],
 
-
-
     "c":[
-
         "What is C Programming?",
         "What is a Function in C?",
         "What is a Pointer?",
         "What is an Array?",
         "What is a Structure?"
-
     ],
 
-
-
     "ds":[
-
         "What is a Stack?",
         "What is a Queue?",
         "What is a Linked List?",
         "What is a Tree?",
         "What is a Graph?"
-
     ],
 
-
-
     "hr":[
-
         "Tell me about yourself.",
         "Why should we hire you?",
         "What are your strengths?",
         "What are your weaknesses?",
         "Where do you see yourself in 5 years?"
-
     ],
 
-
-
     "aptitude":[
-
         "What is 10 + 20?",
         "What is 15 + 5?",
         "What is 100 / 4?",
         "What is 12 * 2?",
         "What is 50 - 20?"
-
     ]
+}
 
-    }
+if category not in questions:
+    return "Invalid category"
 
+q = random.choice(questions[category])
+session['question'] = q
 
-
-    q = random.choice(questions.get(category))
-
-
-    session['question'] = q
-
-
-    return render_template(
-        'question.html',
-        question=q,
-        category=category
-    )
-
-
-
+return render_template(
+    'question.html',
+    question=q,
+    category=category
+)
+```
 
 # ---------------- FEEDBACK ----------------
 
-
-@app.route('/feedback', methods=['POST'])
+@app.route('/feedback', methods=['GET','POST'])
 def feedback():
 
+```
+if request.method == "POST":
 
-    answer = request.form['answer'].lower()
+    answer = request.form['answer'].lower().strip()
+    answer = re.sub(r'[^\w\s]', '', answer)
 
-    category = request.form['category']
-
+    category = request.form.get('category', '').lower()
     question = session.get('question')
 
+    # ALL ANSWERS DATABASE
+    answers = {
 
+        "What is Python?": {
+            "keywords": ["programming", "language"],
+            "feedback": "Explain definition, features and uses."
+        },
 
-    correct_answers = {
+        "What is a Dictionary?": {
+            "keywords": ["key", "value"],
+            "feedback": "Explain key-value pairs with example."
+        },
 
+        "What is Java?": {
+            "keywords": ["programming", "language"],
+            "feedback": "Mention JVM and OOP features."
+        },
 
+        "What is a Pointer?": {
+            "keywords": ["memory", "address"],
+            "feedback": "Explain memory address concept."
+        },
 
-"What is Python?":
-[
-"programming",
-"language",
-"interpreted"
-],
+        # -------- APTITUDE --------
+        "What is 10 + 20?": {
+            "keywords": ["30"],
+            "feedback": "Correct addition."
+        },
 
+        "What is 15 + 5?": {
+            "keywords": ["20"],
+            "feedback": "Correct addition."
+        },
 
+        "What is 100 / 4?": {
+            "keywords": ["25"],
+            "feedback": "Correct division."
+        },
 
-"What is a List in Python?":
-[
-"ordered",
-"mutable",
-"collection"
-],
+        "What is 12 * 2?": {
+            "keywords": ["24"],
+            "feedback": "Correct multiplication."
+        },
 
+        "What is 50 - 20?": {
+            "keywords": ["30"],
+            "feedback": "Correct subtraction."
+        }
+    }
 
-
-"What is a Dictionary?":
-[
-"key",
-"value",
-"pair"
-],
-
-
-
-"What is a Function?":
-[
-"reusable",
-"code",
-"block"
-],
-
-
-
-"What are Modules?":
-[
-"import",
-"file",
-"module"
-],
-
-
-
-"What is Java?":
-[
-"programming",
-"language",
-"object"
-],
-
-
-
-"What is JVM?":
-[
-"virtual",
-"machine",
-"bytecode"
-],
-
-
-
-"What is OOP?":
-[
-"class",
-"object",
-"inheritance"
-],
-
-
-
-"What is Inheritance?":
-[
-"parent",
-"child"
-],
-
-
-
-"What is Polymorphism?":
-[
-"many",
-"forms"
-],
-
-
-
-"What is C Programming?":
-[
-"procedural",
-"language"
-],
-
-
-
-"What is a Pointer?":
-[
-"memory",
-"address"
-],
-
-
-
-"What is an Array?":
-[
-"collection",
-"elements"
-],
-
-
-
-"What is a Stack?":
-[
-"lifo",
-"push",
-"pop"
-],
-
-
-
-"What is a Queue?":
-[
-"fifo",
-"enqueue",
-"dequeue"
-]
-
-}
-
-
+    question_data = answers.get(question, {})
+    keywords = question_data.get("keywords", [])
+    custom_feedback = question_data.get("feedback", "")
 
     score = 0
 
-
-
-    keywords = correct_answers.get(question,[])
-
-
-
     for word in keywords:
-
         if word in answer:
-
             score += 1
 
-
-
-
     if score >= 1:
-
-
         marks = 10
-
-
-        feedback_msg = (
-        "Excellent answer. "
-        "Your concept is correct. "
-        "Try adding more explanation."
-        )
-
-
+        feedback_msg = "Excellent answer. " + custom_feedback
     else:
-
-
         marks = 0
-
-
-        feedback_msg = (
-        "Answer needs improvement. "
-        "Focus on definition, key points and examples."
-        )
-
-
-
+        feedback_msg = "Answer needs improvement. " + custom_feedback
 
     conn = sqlite3.connect('database/users.db')
-
     cursor = conn.cursor()
 
-
-
     cursor.execute(
-
-    "INSERT INTO interview_results(email,interview_type,score) VALUES(?,?,?)",
-
-    (
-    session.get('email'),
-    category.title()+" Interview",
-    marks
+        "INSERT INTO interview_results(email,interview_type,score) VALUES(?,?,?)",
+        (
+            session.get('email'),
+            category.title() + " Interview",
+            marks
+        )
     )
-
-    )
-
 
     conn.commit()
-
     conn.close()
 
-
-
     return render_template(
-
-    'feedback.html',
-
-    score=marks,
-
-    feedback_msg=feedback_msg
-
+        'feedback.html',
+        score=marks,
+        feedback_msg=feedback_msg
     )
 
+return render_template(
+    'feedback.html',
+    score=0,
+    feedback_msg="No feedback available"
+)
+```
+
+# ---------------- PERFORMANCE ----------------
 
 @app.route('/performance')
 def performance():
 
-    conn = sqlite3.connect('database/users.db')
-    cursor = conn.cursor()
+```
+conn = sqlite3.connect('database/users.db')
+cursor = conn.cursor()
 
-    cursor.execute("SELECT COUNT(*) FROM interview_results")
-    total = cursor.fetchone()[0]
+cursor.execute("SELECT COUNT(*) FROM interview_results")
+total = cursor.fetchone()[0]
 
-    cursor.execute("SELECT AVG(score) FROM interview_results")
-    avg = cursor.fetchone()[0]
+cursor.execute("SELECT AVG(score) FROM interview_results")
+avg = cursor.fetchone()[0]
 
-    conn.close()
+conn.close()
 
-    if avg is None:
-        avg = 0
+if avg is None:
+    avg = 0
 
-    if avg >= 8:
-        level = "Excellent"
+if avg >= 8:
+    level = "Excellent"
+elif avg >= 5:
+    level = "Good"
+else:
+    level = "Needs Improvement"
 
-    elif avg >= 5:
-        level = "Good"
-
-    else:
-        level = "Needs Improvement"
-
-
-    return render_template(
-        'performance.html',
-        total=total,
-        avg=round(avg,2),
-        level=level
-    )
+return render_template(
+    'performance.html',
+    total=total,
+    avg=round(avg,2),
+    level=level
+)
+```
 
 # ---------------- HISTORY ----------------
-
 
 @app.route('/history')
 def history():
 
+```
+conn = sqlite3.connect('database/users.db')
+cursor = conn.cursor()
 
-    conn = sqlite3.connect('database/users.db')
+cursor.execute("SELECT interview_type,score FROM interview_results")
+data = cursor.fetchall()
 
-    cursor = conn.cursor()
+conn.close()
 
-
-    cursor.execute(
-    "SELECT interview_type,score FROM interview_results"
-    )
-
-
-    data = cursor.fetchall()
-
-
-    conn.close()
-
-
-
-    return render_template(
+return render_template(
     'history.html',
     records=data
-    )
-
-
-
-
+)
+```
 
 # ---------------- LOGOUT ----------------
 
-
 @app.route('/logout')
 def logout():
+session.clear()
+return render_template('index.html')
 
-    session.clear()
-
-    return render_template('index.html')
-
-
-@app.route('/check')
-def check():
-    return "Flask is working"
-
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
-    
+if **name** == "**main**":
+app.run(host="0.0.0.0", port=10000)
