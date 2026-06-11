@@ -433,8 +433,39 @@ def feedback():
     )
 
 
+@app.route('/performance')
+def performance():
+
+    conn = sqlite3.connect('database/users.db')
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) FROM interview_results")
+    total = cursor.fetchone()[0]
+
+    cursor.execute("SELECT AVG(score) FROM interview_results")
+    avg = cursor.fetchone()[0]
+
+    conn.close()
+
+    if avg is None:
+        avg = 0
+
+    if avg >= 8:
+        level = "Excellent"
+
+    elif avg >= 5:
+        level = "Good"
+
+    else:
+        level = "Needs Improvement"
 
 
+    return render_template(
+        'performance.html',
+        total=total,
+        avg=round(avg,2),
+        level=level
+    )
 
 # ---------------- HISTORY ----------------
 
@@ -480,12 +511,12 @@ def logout():
     return render_template('index.html')
 
 
+@app.route('/check')
+def check():
+    return "Flask is working"
 
 
 
 if __name__ == "__main__":
-
-    app.run(
-    host="0.0.0.0",
-    port=10000
-    )
+    app.run(host="0.0.0.0", port=10000)
+    
