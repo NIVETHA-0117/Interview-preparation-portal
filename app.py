@@ -134,108 +134,116 @@ def question(category):
     )
 
 
-@app.route('/feedback', methods=['GET', 'POST'])
+@app.route('/feedback', methods=['POST'])
 def feedback():
 
-    if request.method == 'POST':
-        answer = request.form['answer']
-        category = request.form['category']
-        question = session.get('question')
+    answer = request.form['answer'].lower()
+    category = request.form['category']
+    question = session.get('question')
 
-        import re
-        answer = answer.lower().strip()
-        answer = re.sub(r'[^\w\s]', '', answer)
+    score = 0
 
-        score = 2
+    correct_answers = {
 
-        if category == "aptitude":
-            correct_values = {
-                "What is 10 + 20?": "30",
-                "What is 15 + 5?": "20",
-                "What is 100 / 4?": "25",
-                "What is 12 * 2?": "24",
-                "What is 50 - 20?": "30"
-            }
+        "What is Python?": [
+            "programming language",
+            "high level",
+            "interpreted"
+        ],
 
-            correct_answer = correct_values.get(question, "")
+        "What is a List in Python?": [
+            "ordered",
+            "mutable",
+            "collection"
+        ],
 
-            try:
-                if float(answer) == float(correct_answer):
-                    score = 10
-                    feedback_msg = "Correct answer."
-                else:
-                    score = 0
-                    feedback_msg = "Wrong answer."
-            except:
-                score = 0
-                feedback_msg = "Enter a valid number."
+        "What is a Dictionary?": [
+            "key",
+            "value",
+            "key-value"
+        ],
 
-        else:
-            correct_answers = {
-                "What is Python?": ["programming", "language"],
-                "What is a List in Python?": ["ordered", "mutable"],
-                "What is a Dictionary?": ["key", "value"]
-            }
+        "What is a Function?": [
+            "reusable",
+            "code",
+            "block"
+        ],
 
-            keywords = correct_answers.get(question, [])
-            match_count = sum(1 for k in keywords if k in answer)
+        "What are Modules?": [
+            "python file",
+            "import",
+            "code"
+        ],
 
-            if match_count == len(keywords) and len(keywords) > 0:
-                score = 10
-            elif match_count > 0:
-                score = 6
-            else:
-                score = 0
+        "What is Java?": [
+            "programming language",
+            "object oriented",
+            "jvm"
+        ],
 
-            if score == 10:
-                feedback_msg = "Excellent answer."
-            elif score >= 5:
-                feedback_msg = "Good answer."
-            else:
-                feedback_msg = "Try to explain more clearly."
+        "What is JVM?": [
+            "java virtual machine",
+            "bytecode"
+        ],
 
-        return render_template(
-            'feedback.html',
-            score=score,
-            feedback_msg=feedback_msg
-        )
+        "What is a Pointer?": [
+            "memory",
+            "address"
+        ],
 
-    # handles GET request (prevents error)
-    return render_template(
-        'feedback.html',
-        score=0,
-        feedback_msg="No feedback available yet."
-    )
+        "What is a Stack?": [
+            "lifo",
+            "push",
+            "pop"
+        ],
 
-@app.route('/performance')
-def performance():
+        "What is a Queue?": [
+            "fifo",
+            "enqueue",
+            "dequeue"
+        ]
+
+    }
+
+
+    keywords = correct_answers.get(question, [])
+
+
+    for word in keywords:
+        if word in answer:
+            score += 1
+
+
+    if score >= 1:
+        marks = 10
+        feedback_msg = "Good answer. Your concept is correct. Try adding more explanation."
+    else:
+        marks = 0
+        feedback_msg = "Answer needs improvement. Focus on the main concept and important points."
+
 
     conn = sqlite3.connect('database/users.db')
     cursor = conn.cursor()
 
-    cursor.execute("SELECT COUNT(*) FROM interview_results")
-    total = cursor.fetchone()[0]
 
-    cursor.execute("SELECT AVG(score) FROM interview_results")
-    avg = cursor.fetchone()[0]
+    cursor.execute(
+        "INSERT INTO interview_results(email, interview_type, score) VALUES (?, ?, ?)",
+        (
+            session.get('email'),
+            category.title()+" Interview",
+            marks
+        )
+    )
 
+
+    conn.commit()
     conn.close()
 
-    if avg is None:
-        avg = 0
-
-    if avg >= 8:
-        level = "Excellent"
-    elif avg >= 5:
-        level = "Good"
-    else:
-        level = "Needs Improvement"
 
     return render_template(
-        'performance.html',
-        total=total,
-        avg=round(avg, 2),
-        level=level
+        'feedback.html',
+        score=marks,
+        feedback_msg=feedback_msg
     )
 
 
