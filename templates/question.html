@@ -2,57 +2,81 @@
 <html>
 <head>
     <title>Interview Questions</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 </head>
+
 <body>
 
-<div class="question-container">
+<h1>Interview Questions</h1>
 
-    <h1>Interview Questions</h1>
+<h5>
+Time Left:
+<span id="timer">30</span> seconds
+</h5>
 
-    <p class="timer">Time Left: <span id="time">30</span> seconds</p>
 
-    <h3>Question 1</h3>
+<h3>Question 1</h3>
 
-    <p>{{ question }}</p>
 
-    <form method="POST">
+<p>{{ question }}</p>
 
-        <textarea name="answer" placeholder="Type your answer here..." required></textarea>
 
-        <br>
+<form action="{{ url_for('feedback') }}" method="POST">
 
-        <button type="submit">Submit Answer</button>
 
-    </form>
+<input type="hidden" 
+name="category" 
+value="{{ category }}">
 
-</div>
+
+<textarea 
+name="answer" 
+rows="5" 
+cols="50"
+placeholder="Type your answer here..."
+required></textarea>
+
+
+<br><br>
+
+
+<button type="submit">
+Submit Answer
+</button>
+
+
+</form>
+
+
+
 <script>
-    let timeLeft = 30;
 
-    const timerElement = document.getElementById("time");
+let time = 30;
 
-    if (!timerElement) {
-        console.log("Timer element NOT found");
-    } else {
-        const countdown = setInterval(() => {
-            timeLeft--;
 
-            timerElement.textContent = timeLeft;
+let timer = setInterval(function(){
 
-            if (timeLeft <= 5) {
-                timerElement.style.color = "red";
-            }
+    time--;
 
-            if (timeLeft <= 0) {
-                clearInterval(countdown);
-                alert("Time is up!");
-                document.querySelector("form").submit();
-            }
+    document.getElementById("timer").innerHTML = time;
 
-        }, 1000);
+
+    if(time <= 0){
+
+        clearInterval(timer);
+
+        alert("Time's up! Please submit your answer.");
+
     }
+
+
+},1000);
+
+
 </script>
+
 
 </body>
 </html>
