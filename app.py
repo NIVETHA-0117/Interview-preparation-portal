@@ -134,104 +134,78 @@ def question(category):
     )
 
 
-@app.route('/feedback', methods=['POST'])
+@app.route('/feedback', methods=['GET', 'POST'])
 def feedback():
 
-    answer = request.form['answer']
-    category = request.form['category']
-    question = session.get('question')
+    if request.method == 'POST':
+        answer = request.form['answer']
+        category = request.form['category']
+        question = session.get('question')
 
-    score = 2  
-    answer = answer.lower().strip()
-    answer = re.sub(r'[^\w\s]', '', answer)
+        import re
+        answer = answer.lower().strip()
+        answer = re.sub(r'[^\w\s]', '', answer)
 
-    if category == "aptitude":
-        correct_values = {
-            "What is 10 + 20?": "30",
-            "What is 15 + 5?": "20",
-            "What is 100 / 4?": "25",
-            "What is 12 * 2?": "24",
-            "What is 50 - 20?": "30"
-        }
+        score = 2
 
-        correct_answer = correct_values.get(question, "")
+        if category == "aptitude":
+            correct_values = {
+                "What is 10 + 20?": "30",
+                "What is 15 + 5?": "20",
+                "What is 100 / 4?": "25",
+                "What is 12 * 2?": "24",
+                "What is 50 - 20?": "30"
+            }
 
-        try:
-            if float(answer) == float(correct_answer):
+            correct_answer = correct_values.get(question, "")
+
+            try:
+                if float(answer) == float(correct_answer):
+                    score = 10
+                    feedback_msg = "Correct answer."
+                else:
+                    score = 0
+                    feedback_msg = "Wrong answer."
+            except:
+                score = 0
+                feedback_msg = "Enter a valid number."
+
+        else:
+            correct_answers = {
+                "What is Python?": ["programming", "language"],
+                "What is a List in Python?": ["ordered", "mutable"],
+                "What is a Dictionary?": ["key", "value"]
+            }
+
+            keywords = correct_answers.get(question, [])
+            match_count = sum(1 for k in keywords if k in answer)
+
+            if match_count == len(keywords) and len(keywords) > 0:
                 score = 10
-                feedback_msg = "Correct answer."
+            elif match_count > 0:
+                score = 6
             else:
                 score = 0
-                feedback_msg = "Wrong answer."
-        except:
-            score = 0
-            feedback_msg = "Enter a valid number."
 
-    else:
-        correct_answers = {
-            "What is Python?": ["programming", "language"],
-            "What is a List in Python?": ["ordered", "mutable"],
-            "What is a Dictionary?": ["key", "value"],
-            "What is a Function?": ["reusable", "code"],
-            "What are Modules?": ["file", "import"],
-            "What is Java?": ["programming", "language"],
-            "What is JVM?": ["java", "virtual", "machine"],
-            "What is OOP?": ["object", "class"],
-            "What is Inheritance?": ["parent", "child"],
-            "What is Polymorphism?": ["many", "forms"],
-            "What is C Programming?": ["programming", "language"],
-            "What is a Function in C?": ["reusable", "code"],
-            "What is a Pointer?": ["memory", "address"],
-            "What is an Array?": ["collection"],
-            "What is a Structure?": ["user", "defined"],
-            "What is a Stack?": ["lifo"],
-            "What is a Queue?": ["fifo"],
-            "What is a Linked List?": ["node"],
-            "What is a Tree?": ["root"],
-            "What is a Graph?": ["vertex"]
-        }
+            if score == 10:
+                feedback_msg = "Excellent answer."
+            elif score >= 5:
+                feedback_msg = "Good answer."
+            else:
+                feedback_msg = "Try to explain more clearly."
 
-        keywords = correct_answers.get(question, [])
+        return render_template(
+            'feedback.html',
+            score=score,
+            feedback_msg=feedback_msg
+        )
 
-        match_count = 0
-        for keyword in keywords:
-            if keyword in answer:
-                match_count += 1
-
-        
-        if match_count == len(keywords) and len(keywords) > 0:
-            score = 10
-        elif match_count > 0:
-            score = 6   
-        else:
-            score = 0
-
-        
-        if score == 10:
-            feedback_msg = "Excellent answer."
-        elif score >= 5:
-            feedback_msg = "Good answer."
-        else:
-            feedback_msg = "Try to explain more clearly."
-
-    
-    conn = sqlite3.connect('database/users.db')
-    cursor = conn.cursor()
-
-    cursor.execute(
-     "INSERT INTO interview_results(email, interview_type, score) VALUES (?, ?, ?)",
-     (session['email'], category.title() + " Interview", score)
-    )
-
-    conn.commit()
-    conn.close()
-
+    # handles GET request (prevents error)
     return render_template(
         'feedback.html',
-        score=score,
-        feedback_msg=feedback_msg
+        score=0,
+        feedback_msg="No feedback available yet."
     )
-
 
 @app.route('/performance')
 def performance():
